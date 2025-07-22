@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import smtplib
 import openai
 from email.message import EmailMessage
