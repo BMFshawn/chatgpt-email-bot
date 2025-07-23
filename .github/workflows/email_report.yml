@@ -2,14 +2,14 @@ name: ChatGPT Email Reporter
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # 매일 오전 9시 UTC = 한국 오후 6시
-  workflow_dispatch:
+    - cron: '0 9 * * *'  # 매일 UTC 09:00 → KST 18:00
+  workflow_dispatch:    # 수동 실행 지원
 
 jobs:
   send_email:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -18,11 +18,15 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run script
+      - name: Run email script
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          GMAIL_USER:         ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_RECIPIENT:    ${{ secrets.EMAIL_RECIPIENT }}
+          CHATGPT_PROMPT:     ${{ secrets.CHATGPT_PROMPT }}
         run: python send_chatgpt_email.py
